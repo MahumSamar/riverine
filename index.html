@@ -43,7 +43,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .stage{position:relative;width:100%;height:100vh;height:100dvh;overflow:hidden;isolation:isolate}
 
 .scene{position:absolute;inset:0;z-index:-1}
-.scene img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block;user-select:none}
+.scene video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block;user-select:none;pointer-events:none}
 /* Three stacked shade layers in one tone; fitted per-pixel against the reference (≈3/255 RMS). */
 .shade{position:absolute;inset:0;pointer-events:none}
 .shade--x{background:linear-gradient(90deg,
@@ -121,7 +121,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 
 /* ---------- Compact layout: phones, portrait tablets ---------- */
 /* Wide cinema screens: keep the horizon in frame. */
-@media (min-aspect-ratio: 16/9){ .scene img{object-position:50% 24%} }
+@media (min-aspect-ratio: 16/9){ .scene video{object-position:50% 24%} }
 
 /* ---------- Mobile architecture ----------
    Why 650px: the tablet composition holds until three relationships fail together —
@@ -130,7 +130,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
    Components keep their desktop proportions (they are drawn in --u); only placement changes. */
 @media (max-width: 649.98px), (max-height: 500px){
   :root{ --u: clamp(0.94px, calc(100vw / 390), 1.2px); --gutter: clamp(18px, 5.6vw, 32px); }
-  .scene img{object-position:63% 50%}
+  .scene video{object-position:63% 50%}
   .shade--x{background:linear-gradient(90deg, rgba(var(--shade),.35) 0%, rgba(var(--shade),.1) 100%)}
   .shade--y{background:linear-gradient(180deg, rgba(var(--shade),.45) 0%, rgba(var(--shade),.05) 22%, rgba(var(--shade),.25) 45%, rgba(var(--shade),.78) 70%, rgba(var(--shade),.94) 100%)}
   .shade--corner{background:none}
@@ -184,7 +184,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 @media (max-height: 500px) and (min-aspect-ratio: 1/1){
   :root{ --u: clamp(0.82px, calc(100vh / 415), 0.94px); }
   @supports (height: 100dvh){ :root{ --u: clamp(0.82px, calc(100dvh / 415), 0.94px); } }
-  .scene img{object-position:50% 30%}
+  .scene video{object-position:50% 30%}
   .hero{left:max(calc(61 * var(--u)), calc(env(safe-area-inset-left) + 16px));right:auto;bottom:max(calc(24 * var(--u)), calc(env(safe-area-inset-bottom) + 10px))}
   .hero__brand{margin:0 0 calc(10 * var(--u));font-size:calc(22 * var(--u));line-height:calc(22 * var(--u))}
   .hero__title{font-size:clamp(28px, 10vh, 44px)}
@@ -217,7 +217,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   :root{ --t: clamp(0.94px, calc(100vw / 800), 1.15px); }
   .hero,.cue{ --u: calc(var(--t) * 1.1); }
   /* Keep the braided channels behind the copy instead of the dark open water. */
-  .scene img{ object-position: 58% 50%; }
+  .scene video{ object-position: 58% 50%; }
 }
 /* ---------- Entrance (runs once, then leaves no trace) ---------- */
 .hero__title .rv-in{display:inline-block}
@@ -234,7 +234,7 @@ window.__rvFailsafe=setTimeout(function(){h.classList.remove('rv-pre','rv-run');
 <body>
 <main class="stage">
   <div class="scene" aria-hidden="true">
-    <img src="assets/images/riverine-background.jpg" alt="" width="1448" height="1086" decoding="async" fetchpriority="high">
+    <video src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261005_182346_a590ff3b-72e5-41ce-8f69-a8c823eaecaa.mp4" autoplay muted loop playsinline></video>
     <div class="shade shade--x"></div>
     <div class="shade shade--y"></div>
     <div class="shade shade--corner"></div>
@@ -363,9 +363,9 @@ window.__rvFailsafe=setTimeout(function(){h.classList.remove('rv-pre','rv-run');
     html.classList.remove('rv-pre');             /* same frame: backwards-fill now holds every start state */
     Promise.all(anims.map(function(a){return a.finished;})).then(finish,finish);
   }
-  var img=q0('.scene img');
+  var bg=q0('.scene video');
   function q0(s){return document.querySelector(s);}
-  var gates=[document.fonts&&document.fonts.ready, img&&img.decode&&img.decode().catch(function(){})];
+  var gates=[document.fonts&&document.fonts.ready, bg&&new Promise(function(r){if(bg.readyState>=2){r();return;}bg.addEventListener('loadeddata',r,{once:true});bg.addEventListener('error',r,{once:true});})];
   Promise.all(gates).then(function(){ requestAnimationFrame(run); }, function(){ requestAnimationFrame(run); });
 })();
 </script>
